@@ -48,10 +48,14 @@ def generate_api_key(data: dict):
 
 
 def verify_token(token: str = Depends(token_auth_scheme)):
+    print(f"Received token: {token}")  # Debug print
 
     credentials_exception = HTTPException(
         status_code=401, detail="Could not validate credentials"
     )
+
+    if not token:
+        raise credentials_exception
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
