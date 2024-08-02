@@ -8,3 +8,4 @@ db = client.get_database("assistant")
 
 organizations = db.get_collection("organizations")
 users = db.get_collection("users")
+apikeys = db.get_collection("apikeys")
