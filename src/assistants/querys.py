@@ -19,3 +19,19 @@ async def create_assistant_db(assistant: Assistant):
 
     assistant_db = await get_assistant_db(assistant.assistant_id)
     return assistant_db
+
+
+async def get_list_assistants(organization: str):
+    assistants = assitants.find({"organization": organization})
+
+    items = []
+    async for item in assistants:
+        i = {
+            "id": str(item["_id"]),
+            "name": item["name"],
+            "type": item["type"],
+            "instructions": item["instructions"],
+            "organization": item["organization"],
+        }
+        items.append(i)
+    return items

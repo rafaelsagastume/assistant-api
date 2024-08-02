@@ -10,6 +10,7 @@ class Assistant(BaseModel):
 
 
 class AssistantRequest(BaseModel):
+    id: str = None
     name: str
     type: str
     instructions: str
