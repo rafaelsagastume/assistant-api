@@ -3,6 +3,7 @@ from src.auth.models import Organization, User
 
 
 async def get_user(email: str):
+    email = email.lower().strip()
     user = await users.find_one({"email": email})
     if user:
         return User(**user)
