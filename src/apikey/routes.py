@@ -1,8 +1,10 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from core.security import verify_token
 from src.apikey.models import ApiKeyResponse
-from src.apikey.querys import create_api_key
+from src.apikey.querys import create_api_key, list_api_keys
 
 router = APIRouter(prefix="/apikey", tags=["apikey"])
 
@@ -15,6 +17,18 @@ async def create(authorization: dict = Depends(verify_token)):
     try:
         organization = authorization.organization
         return await create_api_key(organization)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/list", response_model=List[ApiKeyResponse])
+async def list(authorization: dict = Depends(verify_token)):
+
+    try:
+        organization = authorization.organization
+        return await list_api_keys(organization)
     except HTTPException as e:
         raise e
     except Exception as e:
