@@ -26,9 +26,11 @@ async def register(user: UserRegister = Depends()):
         await create_organization(organization)
 
         user = User(username=user.username, password=hashed_password,
-                    email=user.email, organization_domain=user.organization_domain)
+                    email=user.email, organization=organization.slug)
 
         await create_user(user)
+
+        return UserResponse(username=user.username, email=user.email, organization=organization.slug)
 
     except HTTPException as e:
         raise e
@@ -48,7 +50,7 @@ async def login(user: UserLogin = Depends()):
 
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": existing_user.email, "email": existing_user.email, "organization_domain": existing_user.organization_domain}, expires_delta=access_token_expires
+            data={"sub": existing_user.email, "email": existing_user.email, "organization": existing_user.organization}, expires_delta=access_token_expires
         )
 
         return Token(access_token=access_token, token_type="bearer")

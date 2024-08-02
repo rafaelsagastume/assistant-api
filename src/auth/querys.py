@@ -17,13 +17,20 @@ async def get_organization(domain: str):
     return None
 
 
+async def get_organization_by_slug(slug: str):
+    organization = await organizations.find_one({"slug": slug})
+    if organization:
+        return Organization(**organization)
+    return None
+
+
 async def create_user(user: User):
 
     existing_user = await get_user(user.email)
     if existing_user:
         raise Exception("User already exists")
 
-    existing_organization = await get_organization(user.organization_domain)
+    existing_organization = await get_organization_by_slug(user.organization)
     if not existing_organization:
         raise Exception("Organization does not exist")
 
