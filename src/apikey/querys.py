@@ -17,3 +17,7 @@ async def list_api_keys(organization: str):
     async for item in api_keys:
         items.append(ApiKeyResponse(apikey=f"ai_{item['key']}"))
     return items
+
+
+async def delete_api_key(organization: str, apikey: str):
+    await apikeys.delete_one({"organization": organization, "key": apikey})
