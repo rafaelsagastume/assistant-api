@@ -4,7 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.apikey.routes import router as apikey_router
 from src.auth.routes import router as auth_router
 
-app = FastAPI()
+app = FastAPI(
+    title="Assistant API",
+    description="Empower your business with smart and fast AI-powered responses.",
+    version="0.1.0",
+)
 
 origins = ["*"]
 
