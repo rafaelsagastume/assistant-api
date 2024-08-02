@@ -48,7 +48,7 @@ async def login(user: UserLogin = Depends()):
 
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": existing_user.email}, expires_delta=access_token_expires
+            data={"sub": existing_user.email, "email": existing_user.email, "organization_domain": existing_user.organization_domain}, expires_delta=access_token_expires
         )
 
         return Token(access_token=access_token, token_type="bearer")
