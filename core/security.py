@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 
 token_auth_scheme = APIKeyHeader(name="Authorization", auto_error=False)
+api_key_auth_scheme = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 class TokenData(BaseModel):
@@ -64,6 +65,27 @@ def verify_token(token: str = Depends(token_auth_scheme)):
         if username is None or organization is None:
             raise credentials_exception
         token_data = TokenData(username=username, organization=organization)
+    except JWTError:
+        raise credentials_exception
+    return token_data
+
+
+def verify_api_key(apikey: str = Depends(api_key_auth_scheme)):
+    print(f"Received apikey: {apikey}")  # Debug print
+
+    credentials_exception = HTTPException(
+        status_code=401, detail="Could not validate API key"
+    )
+
+    if not apikey:
+        raise credentials_exception
+
+    try:
+        payload = jwt.decode(apikey, SECRET_KEY, algorithms=[ALGORITHM])
+        organization = payload.get("organization")
+        if organization is None:
+            raise credentials_exception
+        token_data = TokenData(organization=organization)
     except JWTError:
         raise credentials_exception
     return token_data
