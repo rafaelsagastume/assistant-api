@@ -47,6 +47,7 @@ async def get_list_assistants(organization: str):
             "name": item["name"],
             "instructions": item["instructions"],
             "organization": item["organization"],
+            "slug": item.get("slug", ""),
         }
         items.append(i)
     return items
