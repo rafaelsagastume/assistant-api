@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from core.security import verify_token
 from src.assistants.manager import register_assistant
-from src.assistants.models import AssistantRequest
+from src.assistants.models import AssistantRequest, AssistantResponse
 from src.assistants.querys import get_list_assistants
 
 router = APIRouter(prefix="/assistants", tags=["assistants"])
@@ -21,7 +21,7 @@ async def register(assistant: AssistantRequest = Depends(), authorization: dict 
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/list", response_model=List[AssistantRequest])
+@router.get("/list", response_model=List[AssistantResponse])
 async def list(authorization: dict = Depends(verify_token)):
     try:
         organization = authorization.organization

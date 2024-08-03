@@ -36,7 +36,6 @@ async def get_list_assistants(organization: str):
         i = {
             "id": str(item["_id"]),
             "name": item["name"],
-            "type": item["type"],
             "instructions": item["instructions"],
             "organization": item["organization"],
         }

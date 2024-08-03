@@ -11,3 +11,10 @@ class Assistant(BaseModel):
 class AssistantRequest(BaseModel):
     name: str
     instructions: str
+
+
+class AssistantResponse(BaseModel):
+    id: str
+    name: str
+    instructions: str
+    organization: str
