@@ -9,6 +9,13 @@ async def get_assistant_db(assistant_id: str):
     return None
 
 
+async def get_assistant_by_name(name: str, organization: str):
+    assistant = await assitants.find_one({"name": name, "organization": organization})
+    if assistant:
+        return Assistant(**assistant)
+    return None
+
+
 async def create_assistant_db(assistant: Assistant):
 
     existing_assistant = await get_assistant_db(assistant.assistant_id)

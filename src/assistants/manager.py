@@ -1,13 +1,18 @@
 from core.manager.assistants import create_assistant
 from src.assistants.models import Assistant
-from src.assistants.querys import create_assistant_db
+from src.assistants.querys import create_assistant_db, get_assistant_by_name
 
 
 async def register_assistant(assistant: Assistant, organization: str):
-    try:
-        assistant_data = await create_assistant(assistant.name, assistant.type, assistant.instructions, organization)
 
-        assistant_class = Assistant(name=assistant.name, type=assistant.type, instructions=assistant.instructions,
+    assistant_by_name = await get_assistant_by_name(assistant.name, organization)
+    if assistant_by_name:
+        raise Exception("Assistant already exists")
+
+    try:
+        assistant_data = await create_assistant(assistant.name, assistant.instructions, organization)
+
+        assistant_class = Assistant(name=assistant.name, instructions=assistant.instructions,
                                     organization=organization, assistant_id=assistant_data.id)
 
         assistant_db = await create_assistant_db(assistant_class)
