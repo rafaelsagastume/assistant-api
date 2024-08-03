@@ -49,7 +49,6 @@ def generate_api_key(data: dict):
 
 
 def verify_token(token: str = Depends(token_auth_scheme)):
-    print(f"Received token: {token}")  # Debug print
 
     credentials_exception = HTTPException(
         status_code=401, detail="Could not validate credentials"
@@ -71,7 +70,6 @@ def verify_token(token: str = Depends(token_auth_scheme)):
 
 
 def verify_api_key(apikey: str = Depends(api_key_auth_scheme)):
-    print(f"Received apikey: {apikey}")  # Debug print
 
     credentials_exception = HTTPException(
         status_code=401, detail="Could not validate API key"
