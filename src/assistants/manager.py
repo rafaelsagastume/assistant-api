@@ -1,6 +1,7 @@
-from core.manager.assistants import create_assistant
+from core.manager.assistants import create_assistant, delete_assistant
 from src.assistants.models import Assistant
-from src.assistants.querys import create_assistant_db, get_assistant_by_name
+from src.assistants.querys import (create_assistant_db, delete_assistant_db,
+                                   get_assistant_by_id, get_assistant_by_name)
 
 
 async def register_assistant(assistant: Assistant, organization: str):
@@ -17,5 +18,22 @@ async def register_assistant(assistant: Assistant, organization: str):
 
         assistant_db = await create_assistant_db(assistant_class)
         return assistant_db
+    except Exception as e:
+        raise e
+
+
+async def delete_assistant_by_id(id: str, organization: str):
+
+    assistant_db = await get_assistant_by_id(id)
+    if not assistant_db:
+        raise Exception("Assistant not found")
+
+    if assistant_db.organization != organization:
+        raise Exception("You don't have permission to delete this assistant")
+
+    try:
+        await delete_assistant(assistant_db.assistant_id)
+        await delete_assistant_db(id)
+        return True
     except Exception as e:
         raise e

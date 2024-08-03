@@ -13,3 +13,11 @@ async def create_assistant(name: str, instructions: str, organization: str):
         ],
     )
     return assistant
+
+
+async def delete_assistant(assistant_id: str):
+    try:
+        await client_ai.beta.assistants.delete(assistant_id)
+        return True
+    except Exception as e:
+        raise e

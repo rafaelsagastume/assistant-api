@@ -1,9 +1,18 @@
+from bson import ObjectId
+
 from core.db import assitants
 from src.assistants.models import Assistant
 
 
 async def get_assistant_db(assistant_id: str):
     assistant = await assitants.find_one({"assistant_id": assistant_id})
+    if assistant:
+        return Assistant(**assistant)
+    return None
+
+
+async def get_assistant_by_id(id: str):
+    assistant = await assitants.find_one({"_id": ObjectId(id)})
     if assistant:
         return Assistant(**assistant)
     return None
@@ -41,3 +50,11 @@ async def get_list_assistants(organization: str):
         }
         items.append(i)
     return items
+
+
+async def delete_assistant_db(id: str):
+    try:
+        await assitants.delete_one({"_id": ObjectId(id)})
+        return True
+    except Exception as e:
+        raise e
