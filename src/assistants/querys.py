@@ -100,7 +100,7 @@ async def get_assistant_files(assistant_id: str, organization: str):
 
 
 async def get_assistant_file(assistant_id: str, organization: str):
-    assistant_file = await files.find_one({"assistant_id": assistant_id, organization: organization})
+    assistant_file = await files.find_one({"assistant_id": assistant_id, "organization": organization})
     if assistant_file:
         return AssistantFile(**assistant_file)
     return None

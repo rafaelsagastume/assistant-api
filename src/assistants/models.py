@@ -42,6 +42,7 @@ class AssistantFile(BaseModel):
     slug: str = None
     file_id: str
     organization: str
+    vector_id: str
 
     def __init__(self, **data):
         super().__init__(**data)

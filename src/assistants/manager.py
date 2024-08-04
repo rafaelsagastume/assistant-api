@@ -71,7 +71,7 @@ async def register_assistant_file(file: UploadFile, assistant_db_id: str, organi
 
         file = await create_file(file.filename, file.file, vector_id)
         assistant_file = AssistantFile(
-            name=file_name, assistant_id=assistant_db_id, file_id=file.id, organization=organization)
+            name=file_name, assistant_id=assistant_db_id, file_id=file.id, organization=organization, vector_id=vector_id)
         assistant_file_db = await create_assistant_file(assistant_file)
         return assistant_file_db
     except Exception as e:
