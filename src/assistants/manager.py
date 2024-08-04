@@ -61,14 +61,13 @@ async def register_assistant_file(file: UploadFile, assistant_db_id: str, organi
             f"Files with extensions [{extension}] are not supported, only [{', '.join(allowed_extensions)}] are supported")
 
     try:
-        vector_id = None
         vector = await get_assistant_vector_store(assistant.assistant_id)
         if not vector:
             vector_db = await create_vector_store(assistant.slug)
-            vector_id = vector_db.id
-            await create_assistant_vector_store(AssistantVectorStore(vector_store_id=vector_id, assistant_id=assistant.assistant_id))
-        else:
-            vector_id = vector.vector_store_id
+            vector = AssistantVectorStore(
+                vector_store_id=vector_db.id, assistant_id=assistant.assistant_id)
+            await create_assistant_vector_store(vector)
+        vector_id = vector.vector_store_id
 
         file = await create_file(file.filename, file.file, vector_id)
         assistant_file = AssistantFile(
