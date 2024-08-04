@@ -59,3 +59,8 @@ class AssistantFileRequest(BaseModel):
     name: str
     assistant_id: str
     file: UploadFile
+
+
+class AssistantVectorStore(BaseModel):
+    vector_store_id: str
+    assistant_id: str

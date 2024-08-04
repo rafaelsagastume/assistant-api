@@ -1,7 +1,8 @@
 from bson import ObjectId
 
-from core.db import assitants, files
-from src.assistants.models import Assistant, AssistantFile
+from core.db import assitants, files, vectors
+from src.assistants.models import (Assistant, AssistantFile,
+                                   AssistantVectorStore)
 
 
 async def get_assistant_db(assistant_id: str):
@@ -59,6 +60,25 @@ async def delete_assistant_db(id: str):
         return True
     except Exception as e:
         raise e
+
+
+async def get_assistant_vector_store(assistant_id: str):
+    assistant_vector_store = await vectors.find_one({"assistant_id": assistant_id})
+    if assistant_vector_store:
+        return AssistantVectorStore(**assistant_vector_store)
+    return None
+
+
+async def create_assistant_vector_store(vector: AssistantVectorStore):
+
+    existing = await get_assistant_vector_store(vector.assistant_id)
+    if existing:
+        raise Exception("Vector store already exists")
+
+    await vectors.insert_one(vector.dict())
+
+    assistant_vector_store = await get_assistant_vector_store(vector.assistant_id)
+    return assistant_vector_store
 
 
 async def get_assistant_files(assistant_id: str, organization: str):

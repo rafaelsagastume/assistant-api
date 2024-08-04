@@ -2,10 +2,13 @@ from fastapi import UploadFile
 
 from core.manager.assistants import create_assistant, delete_assistant
 from core.manager.files import create_file, create_vector_store
-from src.assistants.models import Assistant, AssistantFile
+from src.assistants.models import (Assistant, AssistantFile,
+                                   AssistantVectorStore)
 from src.assistants.querys import (create_assistant_db, create_assistant_file,
+                                   create_assistant_vector_store,
                                    delete_assistant_db, get_assistant_by_id,
-                                   get_assistant_by_name)
+                                   get_assistant_by_name,
+                                   get_assistant_vector_store)
 
 
 async def register_assistant(assistant: Assistant, organization: str):
@@ -58,9 +61,16 @@ async def register_assistant_file(file: UploadFile, assistant_db_id: str, organi
             f"Files with extensions [{extension}] are not supported, only [{', '.join(allowed_extensions)}] are supported")
 
     try:
-        vector = await create_vector_store(assistant.slug)
+        vector_id = None
+        vector = await get_assistant_vector_store(assistant.assistant_id)
+        if not vector:
+            vector_db = await create_vector_store(assistant.slug)
+            vector_id = vector_db.id
+            await create_assistant_vector_store(AssistantVectorStore(vector_store_id=vector_id, assistant_id=assistant.assistant_id))
+        else:
+            vector_id = vector.vector_store_id
 
-        file = await create_file(file.filename, file.file, vector.id)
+        file = await create_file(file.filename, file.file, vector_id)
         assistant_file = AssistantFile(
             name=file_name, assistant_id=assistant_db_id, file_id=file.id, organization=organization)
         assistant_file_db = await create_assistant_file(assistant_file)
