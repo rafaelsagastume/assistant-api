@@ -1,5 +1,6 @@
 import re
 
+from fastapi import UploadFile
 from pydantic import BaseModel
 
 
@@ -33,3 +34,28 @@ class AssistantResponse(BaseModel):
     instructions: str
     organization: str
     slug: str
+
+
+class AssistantFile(BaseModel):
+    name: str
+    assistant_id: str
+    slug: str = None
+    file_id: str
+    organization: str
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if not self.slug:
+            self.slug = self.generate_slug(self.name)
+
+    @staticmethod
+    def generate_slug(name: str) -> str:
+        slug = re.sub(r'\s+', '-', name.lower()).strip('-')
+        slug = re.sub(r'[^a-z0-9-]', '', slug)
+        return slug
+
+
+class AssistantFileRequest(BaseModel):
+    name: str
+    assistant_id: str
+    file: UploadFile

@@ -1,9 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from core.security import verify_token
-from src.assistants.manager import delete_assistant_by_id, register_assistant
+from src.assistants.manager import (delete_assistant_by_id, register_assistant,
+                                    register_assistant_file)
 from src.assistants.models import AssistantRequest, AssistantResponse
 from src.assistants.querys import get_list_assistants
 
@@ -37,6 +38,17 @@ async def delete(id: str, authorization: dict = Depends(verify_token)):
     try:
         organization = authorization.organization
         return await delete_assistant_by_id(id, organization)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/files/register")
+async def register_file(assistant_db_id: str, file: UploadFile = File(...)):
+    try:
+        organization = "kateai"
+        return await register_assistant_file(file, assistant_db_id, organization)
     except HTTPException as e:
         raise e
     except Exception as e:
