@@ -21,3 +21,18 @@ async def delete_assistant(assistant_id: str):
         return True
     except Exception as e:
         raise e
+
+
+async def update_assistant_assignment_vector_store(assistant_id: str, vector_store_id: str):
+    try:
+        await client_ai.beta.assistants.update(
+            assistant_id=assistant_id,
+            tool_resources={
+                "file_search": {
+                    "vector_store_ids": [vector_store_id]
+                }
+            }
+        )
+        return True
+    except Exception as e:
+        raise e

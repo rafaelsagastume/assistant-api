@@ -1,6 +1,7 @@
 from fastapi import UploadFile
 
-from core.manager.assistants import create_assistant, delete_assistant
+from core.manager.assistants import (create_assistant, delete_assistant,
+                                     update_assistant_assignment_vector_store)
 from core.manager.files import create_file, create_vector_store
 from src.assistants.models import (Assistant, AssistantFile,
                                    AssistantVectorStore)
@@ -64,10 +65,11 @@ async def register_assistant_file(file: UploadFile, assistant_db_id: str, organi
         vector = await get_assistant_vector_store(assistant.assistant_id)
         if not vector:
             vector_db = await create_vector_store(assistant.slug)
-            vector = AssistantVectorStore(
-                vector_store_id=vector_db.id, assistant_id=assistant.assistant_id)
+            vector = AssistantVectorStore(vector_store_id=vector_db.id, assistant_id=assistant.assistant_id)  # noqa
             await create_assistant_vector_store(vector)
+
         vector_id = vector.vector_store_id
+        await update_assistant_assignment_vector_store(assistant.assistant_id, vector_id)  # noqa
 
         file = await create_file(file.filename, file.file, vector_id)
         assistant_file = AssistantFile(
