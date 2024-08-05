@@ -19,5 +19,25 @@ async def list_api_keys(organization: str):
     return items
 
 
+async def get_api_key(organization: str, apikey: str):
+    if not apikey.startswith("ai_"):
+        return None
+
+    key = apikey.split("ai_")[1]
+    api_key = await apikeys.find_one({"organization": organization, "key": key})
+    if api_key:
+        return ApiKeyResponse(apikey=f"{apikey}")
+    return None
+
+
 async def delete_api_key(organization: str, apikey: str):
-    await apikeys.delete_one({"organization": organization, "key": apikey})
+    if not apikey.startswith("ai_"):
+        raise Exception("Invalid API key format")
+
+    key = apikey.split("ai_")[1]
+
+    search = await apikeys.find_one({"organization": organization, "key": key})
+    if not search:
+        raise Exception("API key not found")
+
+    await apikeys.delete_one({"organization": organization, "key": key})

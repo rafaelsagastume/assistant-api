@@ -8,3 +8,7 @@ class ApiKey(BaseModel):
 
 class ApiKeyResponse(BaseModel):
     apikey: str
+
+
+class ApiKeyResponseSuccess(BaseModel):
+    message: str
