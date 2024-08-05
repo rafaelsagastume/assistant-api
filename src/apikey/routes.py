@@ -12,8 +12,6 @@ router = APIRouter(prefix="/apikey", tags=["apikey"])
 @router.post("/generate", response_model=ApiKeyResponse)
 async def create(authorization: dict = Depends(verify_token)):
 
-    print(authorization)
-
     try:
         organization = authorization.organization
         return await create_api_key(organization)
