@@ -45,9 +45,9 @@ async def delete(id: str, authorization: dict = Depends(verify_token)):
 
 
 @router.post("/files/register")
-async def register_file(assistant_db_id: str, file: UploadFile = File(...)):
+async def register_file(assistant_db_id: str, file: UploadFile = File(...), authorization: dict = Depends(verify_token)):
     try:
-        organization = "kateai"
+        organization = authorization.organization
         return await register_assistant_file(file, assistant_db_id, organization)
     except HTTPException as e:
         raise e
