@@ -8,6 +8,6 @@ async def create_message_process(session_id: str, message: str):
     if not session:
         raise Exception("Session not found")
 
-    thread = await create_thread_message(session.thread_id, message, session.assistant_id)
+    await create_thread_message(session.thread_id, message)
     response = await run_assistant(session.assistant_id, session.thread_id)
     return response

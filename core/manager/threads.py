@@ -12,7 +12,7 @@ async def create_thread(assistant_id: str, organization: str):
     return thread
 
 
-async def create_thread_message(thread_id: str, message: str, assistant_id: str):
+async def create_thread_message(thread_id: str, message: str):
     thread = await client_ai.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
