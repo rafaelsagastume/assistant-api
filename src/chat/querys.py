@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from core.db import threads
 from core.manager.threads import create_thread
 from src.assistants.querys import get_assistant_by_id
@@ -19,3 +21,10 @@ async def create_session_process(req: SessionRequest, organization: str) -> Sess
     session_result = await threads.insert_one(new_session.dict())
 
     return SessionResponse(session_id=str(session_result.inserted_id))
+
+
+async def get_session_by_id(session_id: str):
+    session = await threads.find_one({"_id": ObjectId(session_id)})
+    if session:
+        return Session(**session)
+    return None

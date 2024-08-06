@@ -13,3 +13,8 @@ class SessionRequest(BaseModel):
 
 class SessionResponse(BaseModel):
     session_id: str
+
+
+class MessageResponse(BaseModel):
+    session_id: str
+    message: str
