@@ -43,7 +43,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 def generate_api_key(data: dict):
     to_encode = data.copy()
     to_encode.update(
-        {"exp": None, "iat": datetime.utcnow().isoformat(timespec='microseconds')})
+        {"exp": 0, "iat": datetime.utcnow() + timedelta()})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -71,6 +71,11 @@ def verify_token(token: str = Depends(token_auth_scheme)):
 
 def verify_api_key(apikey: str = Depends(api_key_auth_scheme)):
 
+    if apikey.startswith("ai_"):
+        apikey = apikey.split("ai_")[1]
+    else:
+        raise HTTPException(status_code=401, detail="Invalid API key format")
+
     credentials_exception = HTTPException(
         status_code=401, detail="Could not validate API key"
     )
@@ -84,6 +89,7 @@ def verify_api_key(apikey: str = Depends(api_key_auth_scheme)):
         if organization is None:
             raise credentials_exception
         token_data = TokenData(organization=organization)
-    except JWTError:
+    except JWTError as e:
+        print(e)
         raise credentials_exception
     return token_data

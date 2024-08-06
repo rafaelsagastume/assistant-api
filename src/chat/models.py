@@ -8,6 +8,7 @@ class Session(BaseModel):
 
 
 class SessionRequest(BaseModel):
+    apikey: str
     assistant_db_id: str
 
 

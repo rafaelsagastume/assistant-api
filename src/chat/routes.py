@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from core.security import verify_token
+from core.security import verify_api_key
 from src.chat.manager import create_message_process
 from src.chat.models import MessageResponse, SessionRequest, SessionResponse
 from src.chat.querys import create_session_process
@@ -11,6 +11,11 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 @router.post("/session", response_model=SessionResponse)
 async def create_session(req: SessionRequest = Depends()):
+
+    authorization = await verify_api_key(apikey=req.apikey)
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
     try:
         organization = "kateai"
         return await create_session_process(req, organization)
@@ -21,7 +26,12 @@ async def create_session(req: SessionRequest = Depends()):
 
 
 @router.post("/message", response_model=MessageResponse)
-async def create_message(session_id: str, message: str):
+async def create_message(apikey: str, session_id: str, message: str):
+
+    authorization = await verify_api_key(apikey=session_id)
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
     try:
         res = await create_message_process(session_id, message)
         return MessageResponse(session_id=session_id, message=res)
