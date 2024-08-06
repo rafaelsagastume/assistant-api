@@ -19,3 +19,9 @@ class SessionResponse(BaseModel):
 class MessageResponse(BaseModel):
     session_id: str
     message: str
+
+
+class MessageRequest(BaseModel):
+    apikey: str
+    session_id: str
+    message: str

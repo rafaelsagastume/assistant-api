@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -41,9 +42,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 def generate_api_key(data: dict):
+    unique_suffix = str(uuid.uuid4())
     to_encode = data.copy()
     to_encode.update(
-        {"exp": 0, "iat": datetime.utcnow() + timedelta()})
+        {"unique_id": unique_suffix})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
