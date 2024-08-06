@@ -27,11 +27,9 @@ async def run_assistant(assistant_id: str, thread_id: str):
         assistant_id=assistant_id,
     )
 
-    while True:
+    while run.status == "queued" or run.status == "in_progress":
         run = await client_ai.beta.threads.runs.retrieve(run_id=run.id, thread_id=thread_id)
-        if run.status in ["completed", "failed", "cancelled", "expired"]:
-            break
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.4)
 
     message_response = await client_ai.beta.threads.messages.list(
         thread_id=thread_id,
