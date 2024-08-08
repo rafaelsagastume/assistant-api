@@ -13,7 +13,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 @router.post("/session", response_model=SessionResponse)
 async def create_session(req: SessionRequest = Depends()):
 
-    authorization = await verify_api_key(apikey=req.apikey)
+    authorization = verify_api_key(apikey=req.apikey)
     if not authorization:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
