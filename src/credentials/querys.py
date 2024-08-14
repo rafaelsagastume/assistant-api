@@ -1,24 +1,36 @@
+from typing import List
+
 from bson import ObjectId
 
 from core.db import credentials
-from src.credentials.models import Credentials
+from src.credentials.models import Credentials, CredentialsResponse
 
 
-async def get_credential_by_id(id: str):
+async def get_credential_by_id(id: str) -> CredentialsResponse:
     credential = await credentials.find_one({"_id": ObjectId(id)})
     if credential:
-        return Credentials(**credential)
+        return CredentialsResponse(
+            id=str(credential["_id"]),
+            type=credential["type"],
+            base_url=credential["base_url"],
+            organization=credential["organization"],
+        )
     return None
 
 
-async def get_credential_by_type(type_: str):
+async def get_credential_by_type(type_: str) -> CredentialsResponse:
     credential = await credentials.find_one({"type": type_})
     if credential:
-        return Credentials(**credential)
+        return CredentialsResponse(
+            id=str(credential["_id"]),
+            type=credential["type"],
+            base_url=credential["base_url"],
+            organization=credential["organization"],
+        )
     return None
 
 
-async def create_credential_db(credential: Credentials):
+async def create_credential_db(credential: Credentials) -> CredentialsResponse:
     if credential.type == "custom" and not credential.custom_headers:
         raise ValueError("custom_headers must be provided for custom type")
 
@@ -26,28 +38,25 @@ async def create_credential_db(credential: Credentials):
     if existing_credential:
         raise Exception("Credential already exists")
 
-    await credentials.insert_one(credential.dict())
-    created_credential = await get_credential_by_type(credential.type)
+    result = await credentials.insert_one(credential.dict())
+    created_credential = await get_credential_by_id(str(result.inserted_id))
     return created_credential
 
 
-async def get_list_credentials():
+async def get_list_credentials() -> List[CredentialsResponse]:
     credentials_cursor = credentials.find()
-
     items = []
     async for item in credentials_cursor:
-        i = {
-            "id": str(item["_id"]),
-            "type": item["type"],
-            "secret_key": item["secret_key"],
-            "base_url": item["base_url"],
-            "custom_headers": item.get("custom_headers"),
-        }
-        items.append(i)
+        items.append(CredentialsResponse(
+            id=str(item["_id"]),
+            type=item["type"],
+            base_url=item["base_url"],
+            organization=item["organization"]
+        ))
     return items
 
 
-async def update_credential_db(id: str, credential_data: dict):
+async def update_credential_db(id: str, credential_data: dict) -> CredentialsResponse:
     if credential_data.get("type") == "custom" and not credential_data.get("custom_headers"):
         raise ValueError("custom_headers must be provided for custom type")
 
@@ -59,9 +68,9 @@ async def update_credential_db(id: str, credential_data: dict):
         raise e
 
 
-async def delete_credential_db(id: str):
+async def delete_credential_db(id: str) -> bool:
     try:
-        await credentials.delete_one({"_id": ObjectId(id)})
-        return True
+        result = await credentials.delete_one({"_id": ObjectId(id)})
+        return result.deleted_count == 1
     except Exception as e:
         raise e
