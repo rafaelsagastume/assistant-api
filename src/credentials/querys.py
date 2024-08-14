@@ -19,6 +19,9 @@ async def get_credential_by_type(type_: str):
 
 
 async def create_credential_db(credential: Credentials):
+    if credential.type == "custom" and not credential.custom_headers:
+        raise ValueError("custom_headers must be provided for custom type")
+
     existing_credential = await get_credential_by_type(credential.type)
     if existing_credential:
         raise Exception("Credential already exists")
@@ -38,12 +41,16 @@ async def get_list_credentials():
             "type": item["type"],
             "secret_key": item["secret_key"],
             "base_url": item["base_url"],
+            "custom_headers": item.get("custom_headers"),
         }
         items.append(i)
     return items
 
 
 async def update_credential_db(id: str, credential_data: dict):
+    if credential_data.get("type") == "custom" and not credential_data.get("custom_headers"):
+        raise ValueError("custom_headers must be provided for custom type")
+
     try:
         await credentials.update_one({"_id": ObjectId(id)}, {"$set": credential_data})
         updated_credential = await get_credential_by_id(id)

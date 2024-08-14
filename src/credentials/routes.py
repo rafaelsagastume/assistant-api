@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from src.credentials.querys import (
     get_credential_by_id,
     get_credential_by_type,
@@ -17,6 +17,9 @@ router = APIRouter(prefix="/credentials", tags=["credentials"])
 
 @router.post("/", response_model=Credentials)
 async def create_credential(credential: Credentials, authorization: dict = Depends(verify_token)):
+    if credential.type == "custom" and not credential.custom_headers:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="custom_headers must be provided for custom type")
     try:
         return await create_credential_db(credential)
     except Exception as e:
@@ -48,9 +51,12 @@ async def list_credentials(authorization: dict = Depends(verify_token)):
 
 
 @router.put("/{id}", response_model=Credentials)
-async def update_credential(id: str, credential_data: Credentials, authorization: dict = Depends(verify_token)):
+async def update_credential(id: str, credential_data: dict = Body(), authorization: dict = Depends(verify_token)):
+    if credential_data.get("type") == "custom" and not credential_data.get("custom_headers"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="custom_headers must be provided for custom type")
     try:
-        updated_credential = await update_credential_db(id, credential_data.dict())
+        updated_credential = await update_credential_db(id, credential_data)
         if not updated_credential:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Credential not found")
