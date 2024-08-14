@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class Function(BaseModel):
     assistant_id: str
+    credential_id: str
     name: str
     description: str
     type_request: str
@@ -12,6 +13,7 @@ class Function(BaseModel):
 
 class FunctionRequest(BaseModel):
     assistant_id: str
+    credential_id: str
     name: str
     description: str
     type_request: str
