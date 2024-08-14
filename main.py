@@ -6,6 +6,7 @@ from src.assistants.routes import router as assistants_router
 from src.auth.routes import router as auth_router
 from src.chat.routes import router as chat_router
 from src.credentials.routes import router as credentials_router
+from src.functions.routes import router as functions_router
 
 app = FastAPI(
     title="Assistant API",
@@ -28,6 +29,7 @@ app.include_router(auth_router)
 app.include_router(apikey_router)
 app.include_router(assistants_router)
 app.include_router(credentials_router)
+app.include_router(functions_router)
 app.include_router(chat_router)
 
 
